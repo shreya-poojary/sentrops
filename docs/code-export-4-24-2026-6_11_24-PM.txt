@@ -1,0 +1,164 @@
+title SentrOps - LLM-Based AWS Operations Architecture
+
+direction down
+
+// LAYER 1 — DEVELOPER PLANE
+Developer Plane [icon: github, color: gray] {
+  GitHub Monorepo [icon: github]
+  GitHub Actions CI [icon: git-merge]
+  GitHub App [icon: github, label: "GitHub App\n(scoped PR writer)"]
+  Policy Gates [icon: shield] {
+    tfsec [icon: check-circle, label: "tfsec"]
+    Checkov [icon: check-circle, label: "Checkov"]
+    OPA [icon: check-circle, label: "OPA"]
+  }
+}
+
+// LAYER 2 — AWS ACCOUNT
+AWS Account [icon: aws, color: blue] {
+
+  ShipPay Workload [icon: k8s-pod, color: green] {
+    API Gateway Service [icon: aws-api-gateway, label: "API Gateway"]
+    Order Service [icon: package, label: "Order Service"]
+    Payment Simulator [icon: credit-card, label: "Payment Simulator"]
+    DLQ Viewer [icon: eye, label: "DLQ Viewer"]
+    SQS Queue [icon: aws-sqs, label: "SQS"]
+    Dead Letter Queue [icon: aws-sqs, label: "DLQ"]
+    RDS Postgres [icon: aws-rds, label: "RDS Postgres"]
+    Stripe Mock [icon: stripe, label: "stripe-mock"]
+    K6 Load Generator [icon: activity, label: "k6"]
+  }
+
+  Observability Stack [icon: k8s-pod, color: purple] {
+    Prometheus [icon: prometheus]
+    OpenTelemetry Collector [icon: opentelemetry, label: "OTel Collector"]
+    CloudWatch [icon: aws-cloudwatch]
+    Cost Explorer [icon: aws-cost-explorer]
+  }
+
+  Platform Infrastructure [icon: aws-vpc, color: orange] {
+    EKS Cluster [icon: aws-eks, label: "EKS + Karpenter"]
+    VPC Endpoints [icon: aws-vpc, label: "VPC + Endpoints"]
+    IRSA [icon: aws-iam, label: "IRSA"]
+    ArgoCD [icon: argo]
+  }
+}
+
+// LAYER 3 — AI LAYER
+AI Layer [icon: cpu, color: yellow] {
+  MCP Servers [icon: server, color: orange, label: "MCP Servers (Custom OSS)"] {
+    AWS Cost MCP [icon: aws-cost-explorer, label: "aws-cost-mcp ⚙️ OSS"]
+    CloudWatch MCP [icon: aws-cloudwatch, label: "cloudwatch-mcp ⚙️ OSS"]
+    Terraform MCP [icon: terraform, label: "terraform-mcp ⚙️ OSS"]
+  }
+
+  Bedrock Agent [icon: aws-bedrock, label: "Bedrock Agent"] {
+    Haiku [icon: zap, label: "Haiku 4.5 (classification)"]
+    Sonnet [icon: cpu, label: "Sonnet 4.5 (orchestration)"]
+    Opus [icon: star, label: "Opus 4.7 (escalation)"]
+  }
+
+  Eval Harness [icon: check-square, label: "Eval Harness (10 scenarios)"]
+}
+
+// LAYER 4 — REMEDIATION FLOW
+Remediation Flow [icon: git-pull-request, color: red] {
+  Slack Notification [icon: slack, label: "Slack (info-only)"]
+  Terraform PR [icon: git-pull-request, label: "Terraform PR"]
+  Policy Gate [icon: shield] {
+    tfsecurity [icon: check-circle, label: "tfsec"]
+    CheckOv [icon: check-circle, label: "Checkov"]
+    opa [icon: check-circle, label: "OPA"]}
+  Human Approval [icon: user-check, label: "Human Approval (required)"]
+}
+
+
+
+// LAYER 5 — AUDIT & SAFETY PLANE
+Audit Safety Plane [icon: lock, color: black] {
+  S3 Audit Log [icon: aws-s3, label: "S3 Object Lock (audit log)"]
+  AWS Budgets [icon: aws-budgets, label: "AWS Budgets (cost caps)"]
+  SCPs [icon: aws-organizations, label: "SCPs (guardrails)"]
+  CloudTrail [icon: aws-cloudtrail]
+  Token Budgets [icon: sliders, label: "Token + tool-call budgets"]
+}
+
+Zero Write Access Boundary [icon: alert-octagon, color: red, label: "⛔ AGENT HAS ZERO INFRASTRUCTURE WRITE ACCESS\nAll changes: PR → Policy Gate → Human Approval → ArgoCD"]
+
+
+// LAYER 1 CONNECTIONS
+GitHub Monorepo > GitHub Actions CI: push triggers
+GitHub Actions CI > Policy Gates: run checks
+
+// LAYER 1 TO LAYER 2
+GitHub Actions CI > EKS Cluster: OIDC federation [color: blue]
+
+// SHIPPAY WORKLOAD CONNECTIONS
+K6 Load Generator > API Gateway Service: load test
+API Gateway Service > Order Service
+Order Service > RDS Postgres: persists order
+Order Service > SQS Queue: publishes
+SQS Queue > Payment Simulator: consumes
+SQS Queue > Dead Letter Queue: failed messages
+Payment Simulator > Stripe Mock: calls
+DLQ Viewer > Dead Letter Queue: reads
+
+// OBSERVABILITY CONNECTIONS
+Order Service > Prometheus: metrics
+Payment Simulator > Prometheus: metrics
+Order Service > OpenTelemetry Collector: traces
+Payment Simulator > OpenTelemetry Collector: traces
+Prometheus > OpenTelemetry Collector: forward
+OpenTelemetry Collector > CloudWatch: export
+EKS Cluster > CloudWatch: container insights
+
+// IRSA SCOPED IDENTITY (dashed = cross-cutting)
+IRSA --> AWS Cost MCP: scoped IAM role
+IRSA --> CloudWatch MCP: scoped IAM role
+IRSA --> Terraform MCP: scoped IAM role
+
+// MCP TO OBSERVABILITY / GITHUB (read-only queries)
+AWS Cost MCP <> Cost Explorer: queries costs [color: yellow]
+CloudWatch MCP <> CloudWatch: queries metrics [color: yellow]
+Terraform MCP <> GitHub Monorepo: opens PR [color: yellow]
+
+// MCP TO BEDROCK (tool integration)
+AWS Cost MCP > Bedrock Agent: cost tools [color: yellow]
+CloudWatch MCP > Bedrock Agent: metric tools [color: yellow]
+Terraform MCP > Bedrock Agent: terraform tools [color: yellow]
+
+// BEDROCK INTERNAL TIERED ESCALATION
+Haiku > Sonnet: escalate
+Sonnet > Opus: hard cases
+
+// EVAL HARNESS (bidirectional: invokes and scores)
+Eval Harness <> Bedrock Agent: scenarios + scores
+
+// REMEDIATION FLOW — Agent has NO direct write access
+Bedrock Agent > Slack Notification: info-only alerts
+Bedrock Agent > GitHub App: authenticates [color: red]
+GitHub App > Terraform PR: opens PR (short-lived token) [color: red]
+Terraform PR > Policy Gate: validate [color: red]
+Policy Gate > Human Approval: requires approval [color: red]
+Human Approval > ArgoCD: approves merge [color: red]
+ArgoCD > EKS Cluster: applies manifest [color: red]
+
+// ZERO WRITE ACCESS BOUNDARY (the thesis, visually)
+Bedrock Agent --> Zero Write Access Boundary: NO direct access [color: red]
+Zero Write Access Boundary --> EKS Cluster: blocked [color: red]
+
+// AUDIT CONNECTIONS
+Bedrock Agent --> S3 Audit Log: tool call log
+Terraform PR --> S3 Audit Log: PR diff + reasoning
+Bedrock Agent --> Token Budgets: enforces limits
+EKS Cluster --> CloudTrail: API logging
+EKS Cluster --> AWS Budgets: cost events
+SCPs --> AWS Account: enforces guardrails
+
+legend {
+  [connection: ">", color: black, label: "Data flow / dependency"]
+  [connection: ">", color: yellow, label: "MCP tool integration"]
+  [connection: ">", color: red, label: "Remediation path (human-gated)"]
+  [connection: "-->", label: "Cross-cutting (IRSA / audit / guardrail)"]
+  [connection: "<>", label: "Bidirectional query"]
+}
