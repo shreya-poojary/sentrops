@@ -1,5 +1,3 @@
-# sentrops
-Safe agentic operations for AWS. A reference architecture for delegating cloud ops to LLMs without giving them infrastructure write access.
 # SentrOps
 
 **A reference architecture for safely delegating AWS operations to an LLM-based agent.**
@@ -46,4 +44,4 @@ AWS (EKS, Karpenter, IRSA, SQS, RDS, CloudWatch, Cost Explorer, Bedrock) · Terr
 
 ## Author
 
-Built by [Shreya Poojary](https://www.linkedin.com/in/[your-linkedin-handle]) — Senior DevOps & Cloud Engineer, MS-MIS at UIC. This is a portfolio project exploring where DevOps is heading: safe, audited, agent-assisted operations.
+Built by [Shreya Poojary](https://www.linkedin.com/in/shreyapoojary31/) — Senior DevOps & Cloud Engineer, MS-MIS at UIC. This is a portfolio project exploring where DevOps is heading: safe, audited, agent-assisted operations.
