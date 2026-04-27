@@ -1,8 +1,8 @@
 # ADR-008 — Model Tiering Strategy
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 4 — Bedrock agent + eval harness
 
 ---

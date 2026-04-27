@@ -1,8 +1,8 @@
 # ADR-009 — Eval Harness Methodology
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 4 — Bedrock agent + eval harness
 
 ---

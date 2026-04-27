@@ -1,8 +1,8 @@
 # ADR-007 — MCP Server Design Patterns
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 3 — MCP servers
 
 ---

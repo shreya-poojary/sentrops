@@ -1,8 +1,8 @@
 # ADR-003 — VPC and Network Design
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 1 — Terraform landing zone
 
 ---

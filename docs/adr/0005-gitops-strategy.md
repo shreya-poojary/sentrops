@@ -1,8 +1,8 @@
 # ADR-005 — GitOps Strategy (ArgoCD + Kustomize)
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 1 — Terraform landing zone; all subsequent sprints
 
 ---

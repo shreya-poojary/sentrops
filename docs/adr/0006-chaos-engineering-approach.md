@@ -1,8 +1,8 @@
 # ADR-006 — Chaos Engineering Approach
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 2 — Observability + chaos + ShipPay workload
 
 ---

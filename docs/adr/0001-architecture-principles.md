@@ -1,8 +1,8 @@
 # ADR-001 — Architecture Principles
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** All sprints
 
 ---

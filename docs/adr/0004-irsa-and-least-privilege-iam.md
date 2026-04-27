@@ -1,8 +1,8 @@
 # ADR-004 — IRSA Design and Least-Privilege IAM Patterns
 
-**Status:** Accepted  
-**Date:** 2026-04-26  
-**Author:** Shreya Poojary  
+**Status:** Accepted
+**Date:** 2026-04-26
+**Author:** Shreya Poojary
 **Applies to:** Sprint 1 — Terraform landing zone; Sprint 3 — MCP servers
 
 ---
